@@ -224,7 +224,7 @@
         synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'vi-VN';
-        utter.rate = 1.0; // Tốc độ vừa phải để học viên nghe rõ
+        utter.rate = 1.1; // Tốc độ vừa phải để học viên nghe rõ
         
         utter.onstart = () => {
             document.getElementById('ai-waves').style.display = 'flex';

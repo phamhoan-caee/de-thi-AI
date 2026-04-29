@@ -427,11 +427,13 @@
         formData.append('name', nameValue);
         formData.append('birthDate', dobValue);
         formData.append('khoaThi', khoaThiValue);
-        formData.append('ngheName', document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text);
+       const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
+const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
+formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
         formData.append('score', score + "/30 (" + score10 + " điểm)");
         formData.append('status', status);
         formData.append('viPham', cheatCount);
-
+formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
 
         let c = 15;

@@ -251,7 +251,6 @@
                     explanation: i.Giaithich || "Thực hiện đúng quy trình an toàn.",
                     image: i["HINH ANH"] || "" 
                 }));
-                console.log("Đã tải " + allQuestions.length + " câu hỏi.");
             }
         });
     }
@@ -330,20 +329,12 @@
         
         document.getElementById('quiz-content').innerHTML = html;
         renderGrid();
-
-        if (!stored) {
-            let textToRead = "Câu hỏi " + (idx+1) + ": " + q.question + ". ";
-            q.options.forEach((opt, i) => {
-                textToRead += "Đáp án " + labels[i] + ": " + opt + ". ";
-            });
-            aiSpeak(textToRead);
-        }
     }
 
+    // --- HÀM SELECTANS MỚI TÍCH HỢP AI ---
     async function selectAns(qIdx, ans) {
         if(isSubmitted) return;
         
-        // Lưu đáp án sinh viên chọn
         const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
         if(findIndex > -1) studentAnswers[findIndex].selected = ans;
         else studentAnswers.push({qIndex: qIdx, selected: ans});
@@ -352,22 +343,20 @@
         const labels = ['A', 'B', 'C', 'D'];
         const userChoiceLabel = labels[q.options.indexOf(ans)];
 
-        // KIỂM TRA NẾU ĐANG BẬT CHẾ ĐỘ ÔN TẬP THÌ GỌI AI
         if (document.getElementById('modeToggle').checked) {
-            
-            // 1. Hiển thị trạng thái chờ và hiệu ứng rung lắc nếu chọn sai
+            // Hiệu ứng rung lắc nếu chọn sai
             if (userChoiceLabel !== q.answer) {
                 const items = document.querySelectorAll('.option-item');
                 items.forEach(item => {
                     if(item.innerText.includes(ans)) item.classList.add('shake-anim');
                 });
             }
-            
+
             document.getElementById('ai-status').innerText = 'Đang phân tích đáp án...';
             document.getElementById('ai-waves').style.display = 'flex';
 
             try {
-                // 2. GỌI GEMINI AI
+                // 1. Gửi dữ liệu tới Apps Script để hỏi Gemini
                 const response = await fetch(WEB_APP_URL, {
                     method: "POST",
                     body: JSON.stringify({
@@ -376,23 +365,23 @@
                         correct: q.answer
                     })
                 });
-                
                 const data = await response.json();
-                const aiExplanation = data.text; 
+                const aiExplanation = data.text;
 
-                // 3. Cập nhật lời giải và cho AI nói
+                // 2. Cập nhật giải thích mới từ AI vào câu hỏi
                 q.explanation = aiExplanation; 
-                
+
+                // 3. Cho AI nói lời giải thích của Gemini
                 if (userChoiceLabel === q.answer) {
                     aiSpeak("Chính xác! " + aiExplanation);
                 } else {
                     aiSpeak("Chưa đúng rồi. " + aiExplanation);
                 }
                 
-                setTimeout(() => { showQuestion(qIdx); }, 500); 
+                setTimeout(() => { showQuestion(qIdx); }, 500); // Vẽ lại sau khi AI phản hồi
             } catch (error) {
                 console.error("Lỗi AI:", error);
-                aiSpeak("Chưa đúng. Đáp án đúng là " + q.answer + ". " + q.explanation);
+                aiSpeak("Chưa đúng. Đáp án là " + q.answer + ". " + q.explanation);
                 showQuestion(qIdx);
             }
         } else {
@@ -426,10 +415,6 @@
         synth.cancel();
         isSubmitted = true;
         
-        const nameValue = document.getElementById('studentName').value.toUpperCase().trim();
-        const dobValue = document.getElementById('studentDOB').value.trim();
-        const khoaThiValue = document.getElementById('khoaThi').value.trim();
-
         let score = 0;
         selectedQuestions.forEach((q, i) => {
             const ans = studentAnswers.find(a => a.qIndex === i);
@@ -440,11 +425,8 @@
         const score10 = ((score / 30) * 10).toFixed(1); 
         const status = score >= 25 ? "ĐẠT" : "KHÔNG ĐẠT";
 
-        document.getElementById('res-name').innerText = nameValue;
-        document.getElementById('res-dob').innerText = dobValue;
-        document.getElementById('res-id').innerText = khoaThiValue;
+        document.getElementById('res-name').innerText = document.getElementById('studentName').value.toUpperCase();
         document.getElementById('res-score').innerText = score;
-
         const badge = document.getElementById('res-badge');
         badge.innerText = score10 + " ĐIỂM"; 
         badge.style.backgroundColor = status === "ĐẠT" ? "#28a745" : "#dc3545";
@@ -454,15 +436,9 @@
 
         const formData = new URLSearchParams();
         formData.append('maThi', document.getElementById('maThi').value.trim().toUpperCase());
-        formData.append('name', nameValue);
-        formData.append('birthDate', dobValue);
-        formData.append('khoaThi', khoaThiValue);
-        const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
-        const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
-        formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
+        formData.append('name', document.getElementById('studentName').value.toUpperCase());
         formData.append('score', score + "/30 (" + score10 + " điểm)");
         formData.append('status', status);
-        formData.append('viPham', cheatCount);
         formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
 

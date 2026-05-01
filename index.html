@@ -224,7 +224,7 @@
         synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'vi-VN';
-        utter.rate = 1.1; // Tốc độ vừa phải để học viên nghe rõ
+        utter.rate = 1.1; 
         
         utter.onstart = () => {
             document.getElementById('ai-waves').style.display = 'flex';
@@ -331,7 +331,6 @@
         document.getElementById('quiz-content').innerHTML = html;
         renderGrid();
 
-        // CẢI TIẾN: AI đọc cả câu hỏi và đáp án nếu chưa làm
         if (!stored) {
             let textToRead = "Câu hỏi " + (idx+1) + ": " + q.question + ". ";
             q.options.forEach((opt, i) => {
@@ -341,28 +340,60 @@
         }
     }
 
-    function selectAns(qIdx, ans) {
+    async function selectAns(qIdx, ans) {
         if(isSubmitted) return;
+        
+        // Lưu đáp án sinh viên chọn
         const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
         if(findIndex > -1) studentAnswers[findIndex].selected = ans;
         else studentAnswers.push({qIndex: qIdx, selected: ans});
         
         const q = selectedQuestions[qIdx];
         const labels = ['A', 'B', 'C', 'D'];
-        const userChoiceIdx = q.options.indexOf(ans);
-        const userChoiceLabel = labels[userChoiceIdx];
+        const userChoiceLabel = labels[q.options.indexOf(ans)];
 
+        // KIỂM TRA NẾU ĐANG BẬT CHẾ ĐỘ ÔN TẬP THÌ GỌI AI
         if (document.getElementById('modeToggle').checked) {
-            if (userChoiceLabel === q.answer) {
-                aiSpeak("Chính xác. " + q.explanation);
-                showQuestion(qIdx);
-            } else {
+            
+            // 1. Hiển thị trạng thái chờ và hiệu ứng rung lắc nếu chọn sai
+            if (userChoiceLabel !== q.answer) {
                 const items = document.querySelectorAll('.option-item');
                 items.forEach(item => {
                     if(item.innerText.includes(ans)) item.classList.add('shake-anim');
                 });
+            }
+            
+            document.getElementById('ai-status').innerText = 'Đang phân tích đáp án...';
+            document.getElementById('ai-waves').style.display = 'flex';
+
+            try {
+                // 2. GỌI GEMINI AI
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        question: q.question,
+                        selected: ans,
+                        correct: q.answer
+                    })
+                });
+                
+                const data = await response.json();
+                const aiExplanation = data.text; 
+
+                // 3. Cập nhật lời giải và cho AI nói
+                q.explanation = aiExplanation; 
+                
+                if (userChoiceLabel === q.answer) {
+                    aiSpeak("Chính xác! " + aiExplanation);
+                } else {
+                    aiSpeak("Chưa đúng rồi. " + aiExplanation);
+                }
+                
+                setTimeout(() => { showQuestion(qIdx); }, 500); 
+            } catch (error) {
+                console.error("Lỗi AI:", error);
                 aiSpeak("Chưa đúng. Đáp án đúng là " + q.answer + ". " + q.explanation);
-                setTimeout(() => { showQuestion(qIdx); }, 1500);
+                showQuestion(qIdx);
             }
         } else {
             showQuestion(qIdx);
@@ -419,7 +450,6 @@
         badge.style.backgroundColor = status === "ĐẠT" ? "#28a745" : "#dc3545";
         document.getElementById('result-screen').style.display = 'flex';
 
-        // AI thông báo kết quả
         aiSpeak("Kết quả của bạn là " + score10 + " điểm. Trạng thái " + status);
 
         const formData = new URLSearchParams();
@@ -427,13 +457,13 @@
         formData.append('name', nameValue);
         formData.append('birthDate', dobValue);
         formData.append('khoaThi', khoaThiValue);
-       const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
-const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
-formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
+        const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
+        const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
+        formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
         formData.append('score', score + "/30 (" + score10 + " điểm)");
         formData.append('status', status);
         formData.append('viPham', cheatCount);
-formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
+        formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
 
         let c = 15;

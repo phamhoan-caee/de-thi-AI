@@ -499,34 +499,6 @@ Yêu cầu:
         }
     }
 
-    function selectAns(qIdx, ans) {
-        if(isSubmitted) return;
-        const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
-        if(findIndex > -1) studentAnswers[findIndex].selected = ans;
-        else studentAnswers.push({qIndex: qIdx, selected: ans});
-        
-        const q = selectedQuestions[qIdx];
-        const labels = ['A', 'B', 'C', 'D'];
-        const userChoiceIdx = q.options.indexOf(ans);
-        const userChoiceLabel = labels[userChoiceIdx];
-
-        if (document.getElementById('modeToggle').checked) {
-            if (userChoiceLabel === q.answer) {
-                aiSpeak("Chính xác. " + q.explanation);
-                showQuestion(qIdx);
-            } else {
-                const items = document.querySelectorAll('.option-item');
-                items.forEach(item => {
-                    if(item.innerText.includes(ans)) item.classList.add('shake-anim');
-                });
-                aiSpeak("Chưa đúng. Đáp án đúng là " + q.answer + ". " + q.explanation);
-                setTimeout(() => { showQuestion(qIdx); }, 1500);
-            }
-        } else {
-            showQuestion(qIdx);
-        }
-    }
-
     function renderGrid() {
         const grid = document.getElementById('nav-grid');
         grid.innerHTML = "";

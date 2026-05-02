@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỆ THỐNG SÁT HẠCH NGHỀ KHOA MÁY THI CÔNG - CAEE</title>
+    <title>HỆ THỐNG TRẮC NGHIỆM NGHỀ KHOA MÁY THI CÔNG - CAEE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
@@ -35,12 +35,6 @@
         }
         .wave { width: 3px; background: var(--btn-orange); border-radius: 3px; animation: wave-anim 0.5s infinite ease-in-out; }
         @keyframes wave-anim { 0%, 100% { height: 5px; } 50% { height: 15px; } }
-
-        #warning-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(220, 53, 69, 0.9); backdrop-filter: blur(8px);
-            color: white; z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-        }
 
         .caee-header {
             background: var(--header-blue); color: white; padding: 10px 20px;
@@ -83,7 +77,7 @@
 
         .gemini-response-box {
             background: #fdfbff; border-left: 5px solid #764ba2; padding: 15px; 
-            border-radius: 4px; margin-top: 15px; display: none; line-height: 1.6; border: 1px solid #eee;
+            border-radius: 4px; margin-top: 15px; display: none; line-height: 1.6; border: 1px solid #eee; font-size: 14px;
         }
 
         #result-screen { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #003399 0%, #0040cc 100%); z-index: 9999; justify-content: center; align-items: center; color: white; }
@@ -100,13 +94,6 @@
     </style>
 </head>
 <body oncontextmenu="return false">
-
-    <div id="warning-overlay">
-        <h1 style="font-size: 4rem;">⚠️</h1>
-        <h2>PHÁT HIỆN RỜI KHỎI MÀN HÌNH</h2>
-        <p>Vui lòng quay lại ngay. Vi phạm quá 3 lần bài thi sẽ tự động nộp.</p>
-        <h3 id="cheat-count-msg" style="margin-top: 20px; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 10px;"></h3>
-    </div>
 
     <div class="caee-header" id="caee-header">
         <div style="text-align: center;">
@@ -129,7 +116,7 @@
             <input type="text" id="studentName" placeholder="HỌ VÀ TÊN HỌC VIÊN" class="form-control" style="text-transform: uppercase;">
             <input type="text" id="studentDOB" placeholder="Ngày/tháng/năm sinh" class="form-control">
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="khoaThi" value="Khóa Tháng 6/2026" class="form-control" style="flex: 1.5; background: #f9f9f9;" readonly>
+                <input type="text" id="khoaThi" value="Tháng 6/2026" class="form-control" style="flex: 1.5; background: #f9f9f9;" readonly>
                 <input type="password" id="maThi" placeholder="Mã thi" class="form-control" style="flex: 1;">
             </div>
             <div style="display:flex; align-items:center; margin: 15px 0; gap:8px; justify-content: center;">
@@ -178,27 +165,13 @@
 
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD6ZzPWBa0HG24Av-JimMPQg3HTJklLOk89QogsshduBPsvz4xW0Qni82sRJQjuhqxr2E0OLMira03/pub?output=csv&gid=";
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwh2B33pSuRTe74eNnRgKk02HB2zVh1oJTU8dPGUijX-GfV6hwVfo8OSUnF_5OoUPU/exec";
-    
-    // API Key đã khớp với ảnh bạn gửi
-    const apiKey = "AIzaSyCOASkXnFnIjZ97KGjX1krM8r4cyb9X234"; 
+    const apiKey = "AIzaSyCOASkXnFnIjZ97KGjX1krM8r4cyb9X234"; // Key của bạn
 
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
-    let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false, cheatCount = 0;
+    let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false;
     let geminiCache = {};
 
-    const synth = window.speechSynthesis;
-    function aiSpeak(text) {
-        if (!document.getElementById('modeToggle').checked) return;
-        synth.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'vi-VN';
-        utter.onstart = () => { document.getElementById('ai-waves').style.display = 'flex'; };
-        utter.onend = () => { document.getElementById('ai-waves').style.display = 'none'; };
-        synth.speak(utter);
-    }
-
-    // HÀM QUAN TRỌNG: Sửa lỗi "Quay tròn"
+    // HÀM QUAN TRỌNG: Đã đổi sang v1 để nhận diện gemini-1.5-flash
     async function getGeminiExplanation(qIdx) {
         const q = selectedQuestions[qIdx];
         const btn = document.getElementById(`gemini-btn-${qIdx}`);
@@ -213,23 +186,31 @@
         }
 
         btn.disabled = true;
-        btn.innerHTML = `<span class="loading-spinner"></span> Đang phân tích...`;
-        status.innerText = "AI đang suy nghĩ...";
+        btn.innerHTML = `<span class="loading-spinner"></span> Đang kết nối AI...`;
+        status.innerText = "AI đang phân tích câu hỏi...";
         
         const labels = ['A', 'B', 'C', 'D'];
         const correctText = q.options[labels.indexOf(q.answer)] || q.answer;
 
-        const prompt = `Phân tích câu hỏi: "${q.question}". Đáp án đúng là ${q.answer}: ${correctText}. Hãy giải thích tại sao đúng và tại sao các câu khác sai. Trình bày bằng HTML (b, br).`;
+        const prompt = `Phân tích câu hỏi sát hạch máy công trình: "${q.question}". Đáp án đúng là ${q.answer}: ${correctText}. Hãy giải thích tại sao đúng và tại sao các câu khác sai một cách ngắn gọn. Sử dụng thẻ HTML <b> và <br> để trình bày đẹp.`;
+
+        // ENDPOINT V1 CHÍNH THỨC
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         try {
-           const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
             });
 
             const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
 
             let result = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (result) {
@@ -241,11 +222,11 @@
                 status.innerText = "Đã giải thích xong.";
             }
         } catch (e) {
+            console.error("Lỗi AI:", e);
             btn.disabled = false;
             btn.innerHTML = "✨ Thử lại giải thích AI";
-            status.innerText = "Lỗi kết nối AI.";
-            console.error(e);
-            alert("Lỗi: " + e.message);
+            status.innerText = "Lỗi: " + e.message;
+            alert("Không thể gọi AI. Vui lòng kiểm tra lại API Key hoặc mạng.");
         }
     }
 
@@ -296,7 +277,7 @@
         const isPractice = document.getElementById('modeToggle').checked;
         const labels = ['A', 'B', 'C', 'D'];
 
-        let html = `<h3>Câu ${idx + 1}: ${q.question}</h3>`;
+        let html = `<h3 style="color: var(--caee-blue); margin-bottom: 15px;">Câu ${idx + 1}: ${q.question}</h3>`;
         if(q.image) html += `<div class="q-image-box"><img src="${q.image}"></div>`;
 
         q.options.forEach((opt, i) => {
@@ -344,14 +325,6 @@
         const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
         if(findIndex > -1) studentAnswers[findIndex].selected = ans;
         else studentAnswers.push({qIndex: qIdx, selected: ans});
-        
-        if (document.getElementById('modeToggle').checked) {
-            const q = selectedQuestions[qIdx];
-            const labels = ['A','B','C','D'];
-            const userLabel = labels[q.options.indexOf(ans)];
-            if (userLabel === q.answer) aiSpeak("Chính xác.");
-            else aiSpeak("Sai rồi. Đáp án đúng là " + q.answer);
-        }
         showQuestion(qIdx);
     }
 
@@ -382,7 +355,8 @@
         let score = 0;
         selectedQuestions.forEach((q, i) => {
             const ans = studentAnswers.find(a => a.qIndex === i);
-            if(ans && ['A','B','C','D'][q.options.indexOf(ans.selected)] === q.answer) score++;
+            const labels = ['A','B','C','D'];
+            if(ans && labels[q.options.indexOf(ans.selected)] === q.answer) score++;
         });
         document.getElementById('res-name').innerText = document.getElementById('studentName').value.toUpperCase();
         document.getElementById('res-score').innerText = score;
@@ -390,16 +364,6 @@
         document.getElementById('res-badge').style.backgroundColor = score >= 25 ? "#28a745" : "#dc3545";
         document.getElementById('result-screen').style.display = 'flex';
     }
-
-    window.onblur = () => { 
-        if(!isSubmitted && selectedQuestions.length > 0) { 
-            cheatCount++; 
-            document.getElementById('warning-overlay').style.display = 'flex'; 
-            document.getElementById('cheat-count-msg').innerText = `Lần vi phạm: ${cheatCount}/3`;
-            if (cheatCount >= 3) submitQuiz(true); 
-        } 
-    };
-    window.onfocus = () => { if(cheatCount < 3) document.getElementById('warning-overlay').style.display = 'none'; };
 </script>
 </body>
 </html>

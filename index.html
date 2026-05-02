@@ -242,7 +242,7 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwh2B33pSuRTe74eNnRgKk02HB2zVh1oJTU8dPGUijX-GfV6hwVfo8OSUnF_5OoUPU/exec";
     
     // Khởi tạo apiKey cho Gemini LLM (Hệ thống sẽ tự động cung cấp key tại runtime)
-    const apiKey = ""; 
+    const apiKey = "AIzaSyDGGZATY9Ns3pwscF0ivnSydQMSDfja5tg"; 
 
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false, cheatCount = 0;
@@ -297,7 +297,7 @@ Yêu cầu:
 3. Cho một "Mẹo ghi nhớ" ngắn gọn (1 câu) để học viên không bao giờ quên kiến thức này.
 Định dạng HTML đơn giản (dùng thẻ <b>, <ul>, <li>, <br>). Không dùng Markdown phức tạp.`;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         const payload = { contents: [{ parts: [{ text: prompt }] }] };
 
         // Exponential backoff mechanism
@@ -364,29 +364,64 @@ Yêu cầu:
         });
     }
 
-    async function validateAndStart() {
-        const maThi = document.getElementById('maThi').value.trim();
-        const name = document.getElementById('studentName').value.trim();
-        const dob = document.getElementById('studentDOB').value.trim();
-        const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
-        const isOnTap = document.getElementById('modeToggle').checked;
-        const ngheFull = "NGHỀ: " + rawNghe + (isOnTap ? " (ÔN TẬP)" : " (THI)");
-
-        if(!name || !maThi || !dob) return alert("Vui lòng nhập đầy đủ thông tin!");
-        
-        const btn = document.getElementById('btnStart');
-        btn.disabled = true; btn.innerText = "ĐANG KIỂM TRA...";
-
-        try {
-            const res = await fetch(`${WEB_APP_URL}?action=checkCode&code=${encodeURIComponent(maThi)}&name=${encodeURIComponent(name)}&ngheName=${encodeURIComponent(ngheFull)}`);
-            const result = await res.json();
-            if(result.isValid) startQuiz();
-            else { alert(result.message || "Mã thi không đúng!"); btn.disabled = false; btn.innerText = "VÀO THI NGAY ➔"; }
-        } catch(e) { 
-            alert("Lỗi kết nối Server! Vui lòng kiểm tra lại mã thi."); 
-            btn.disabled = false; btn.innerText = "VÀO THI NGAY ➔"; 
-        }
+   async function getGeminiExplanation(qIdx) {
+    const q = selectedQuestions[qIdx];
+    const btn = document.getElementById(`gemini-btn-${qIdx}`);
+    const box = document.getElementById(`gemini-box-${qIdx}`);
+    
+    // Kiểm tra API Key trước khi chạy
+    if (!apiKey) {
+        alert("Lỗi: Bạn chưa cấu hình API Key trong mã nguồn!");
+        return;
     }
+
+    if(geminiCache[qIdx]) {
+        box.innerHTML = geminiCache[qIdx];
+        box.style.display = 'block';
+        btn.style.display = 'none';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="loading-spinner"></span> Đang phân tích...`;
+    
+    const jobName = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
+    
+    // Prompt tối ưu hóa
+    const prompt = `Bạn là chuyên gia an toàn kỹ thuật. Giải thích chi tiết câu hỏi: "${q.question}". 
+    Đáp án đúng là ${q.answer}. Hãy giải thích tại sao đúng và tại sao các phương án khác sai. 
+    Cuối cùng cho 1 mẹo ghi nhớ. Trả lời bằng định dạng HTML (dùng <b>, <br>, <li>).`;
+
+    // Sử dụng model ổn định 1.5 Flash
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        
+        if (!response.ok) throw new Error("Kết nối API thất bại");
+
+        const data = await response.json();
+        let result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (result) {
+            result = result.replace(/```html/g, '').replace(/```/g, ''); // Xử lý Markdown thừa
+            geminiCache[qIdx] = result;
+            box.innerHTML = result;
+            box.style.display = 'block';
+            btn.style.display = 'none';
+            document.getElementById('ai-status').innerText = 'Đã hoàn thành giải thích.';
+        }
+    } catch (error) {
+        console.error(error);
+        btn.disabled = false;
+        btn.innerHTML = "✨ Thử lại giải thích AI";
+        alert("Không thể kết nối với trí tuệ nhân tạo. Vui lòng kiểm tra lại mạng hoặc API Key.");
+    }
+}
 
     function startQuiz() {
         if(allQuestions.length === 0) return alert("Vui lòng đợi dữ liệu tải...");

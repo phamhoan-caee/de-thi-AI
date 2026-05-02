@@ -165,13 +165,13 @@
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD6ZzPWBa0HG24Av-JimMPQg3HTJklLOk89QogsshduBPsvz4xW0Qni82sRJQjuhqxr2E0OLMira03/pub?output=csv&gid=";
  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxelRvwR52I6AADASik5veHbMIoPUdFc9TkPE7rHbOiXENbgbxQui96lS3VqSUBE-TO/exec";
-// Chia nhỏ API Key ra để robot không nhận diện được
-const part1 = "AIzaSyCrNOkqMS-H";
-const part2 = "SWuJhJ0ve1YZ";
-const part3 = "RGha9vp665M"; 
+// Chia nhỏ myhoanghuy ra để robot không nhận diện được
+const part1 = "AIzaSyDbhbkZhErXNfQ";
+const part2 = "6AFZnv6S9zL";
+const part3 = "Ibk-MZzVM"; 
 
 // Ghép lại khi chạy
-const apiKey = part1 + part2 + part3;
+const myhoanghuy = part1 + part2 + part3;
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false;
     let geminiCache = {};

@@ -201,7 +201,6 @@ const myhoanghuy = part1 + part2 + part3;
 
         // ENDPOINT V1 CHÍNH THỨC
 const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + myhoanghuy;
-
         try {
             const response = await fetch(url, {
                 method: 'POST',

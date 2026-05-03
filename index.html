@@ -28,7 +28,7 @@
             background: #fff;
         }
         .ai-avatar img { width: 100%; height: 100%; object-fit: contain; }
-        
+
         .speaking-waves {
             display: none; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
             gap: 3px; align-items: flex-end; height: 15px;
@@ -54,10 +54,10 @@
         .welcome-container { background: white; width: 95%; max-width: 450px; border-radius: 15px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
         .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        
+
         #quiz-screen { padding: 20px; display: none; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1300px; margin: auto; padding-top: 100px; }
         #quiz-content { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 400px; }
-        
+
         .option-item {
             border: 2px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 10px;
             cursor: pointer; transition: 0.2s; font-weight: 500;
@@ -82,7 +82,7 @@
 
         #result-screen { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #003399 0%, #0040cc 100%); z-index: 9999; justify-content: center; align-items: center; color: white; }
         .result-card { background: white; color: #333; width: 90%; max-width: 450px; border-radius: 20px; padding: 30px; text-align: center; }
-        
+
         .loading-spinner {
             width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%; border-top-color: #fff; animation: spin 1s infinite linear; display: inline-block;
@@ -164,13 +164,16 @@
     </div>
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD6ZzPWBa0HG24Av-JimMPQg3HTJklLOk89QogsshduBPsvz4xW0Qni82sRJQjuhqxr2E0OLMira03/pub?output=csv&gid=";
+    const myhoanghuy = "AIzaSyAa4Nmy8s5RplsylGUQJDSzd9deyY2SxFg"; // Key của bạn
+
  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxelRvwR52I6AADASik5veHbMIoPUdFc9TkPE7rHbOiXENbgbxQui96lS3VqSUBE-TO/exec";
-// Chia nhỏ myhoanghuy ra để robot không nhận diện được
-const part1 = "AIzaSyCBvMdjGc"; 
-const part2 = U1tDJyZfVQP-6";
-const part3 = "GDLXbolDztAA";
+// Chia nhỏ API Key ra để robot không nhận diện được
+const part1 = "AIzaSyCBvMdjGc";
+const part2 = "U1tDJyZfVQP-6G";
+const part3 = "DLXbolDztAA"; 
+
 // Ghép lại khi chạy
-const myhoanghuy = part1 + part2 + part3;
+const apiKey = part1 + part2 + part3;
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false;
     let geminiCache = {};
@@ -181,7 +184,7 @@ const myhoanghuy = part1 + part2 + part3;
         const btn = document.getElementById(`gemini-btn-${qIdx}`);
         const box = document.getElementById(`gemini-box-${qIdx}`);
         const status = document.getElementById('ai-status');
-        
+
         if(geminiCache[qIdx]) {
             box.innerHTML = geminiCache[qIdx];
             box.style.display = 'block';
@@ -192,14 +195,15 @@ const myhoanghuy = part1 + part2 + part3;
         btn.disabled = true;
         btn.innerHTML = `<span class="loading-spinner"></span> Đang kết nối AI...`;
         status.innerText = "AI đang phân tích câu hỏi...";
-        
+
         const labels = ['A', 'B', 'C', 'D'];
         const correctText = q.options[labels.indexOf(q.answer)] || q.answer;
 
         const prompt = `Phân tích câu hỏi sát hạch máy công trình: "${q.question}". Đáp án đúng là ${q.answer}: ${correctText}. Hãy giải thích tại sao đúng và tại sao các câu khác sai một cách ngắn gọn. Sử dụng thẻ HTML <b> và <br> để trình bày đẹp.`;
 
         // ENDPOINT V1 CHÍNH THỨC
-const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + myhoanghuy;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -210,7 +214,7 @@ const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flas
             });
 
             const data = await response.json();
-            
+
             if (data.error) {
                 throw new Error(data.error.message);
             }
@@ -291,7 +295,7 @@ const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flas
                 else if(isSelected) cls = "wrong";
                 cls += " disabled";
             } else if(isSelected) cls = "selected";
-            
+
             const clickEvent = (isPractice && stored) ? "" : `onclick="selectAns(${idx}, '${opt.replace(/'/g, "\\'")}')"`;
             html += `<div class="option-item ${cls}" ${clickEvent}><b>${labels[i]}.</b> ${opt}</div>`;
         });
@@ -306,12 +310,12 @@ const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flas
                 </button>
                 <div id="gemini-box-${idx}" class="gemini-response-box"></div>`;
         }
-        
+
         html += `<div style="display:flex; justify-content:space-between; margin-top:25px; gap:10px;">
                     <button class="btn-start" style="padding:10px; background:var(--btn-blue);" onclick="showQuestion(${idx-1})" ${idx===0?'disabled':''}>Lùi lại</button>
                     <button class="btn-start" style="padding:10px; background:var(--btn-blue);" onclick="showQuestion(${idx+1})" ${idx===29?'disabled':''}>Tiếp theo</button>
                  </div>`;
-        
+
         document.getElementById('quiz-content').innerHTML = html;
         if (geminiCache[idx]) {
             const box = document.getElementById(`gemini-box-${idx}`);

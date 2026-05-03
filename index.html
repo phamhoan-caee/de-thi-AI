@@ -16,32 +16,67 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: var(--light-bg); font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
 
-        /* --- STYLE CHO NGƯỜI ẢO AI --- */
-        #ai-container {
-            display: none; background: white; max-width: 1300px; margin: 10px auto; 
-            padding: 12px 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            align-items: center; gap: 15px; border-left: 6px solid var(--btn-orange);
-        }
-        .ai-avatar {
-            position: relative; width: 65px; height: 65px; 
-            border-radius: 50%; border: 2px solid #ddd; overflow: hidden; flex-shrink: 0;
-        }
-      .ai-avatar img.speaking {
+   /* --- STYLE CHO NGƯỜI ẢO AI --- */
+#ai-container {
+    display: none; 
+    background: white; 
+    max-width: 1300px; 
+    margin: 10px auto; 
+    padding: 12px 20px; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    align-items: center; 
+    gap: 15px; 
+    border-left: 6px solid var(--btn-orange);
+}
+
+/* Kích thước mặc định trên Máy tính */
+.ai-avatar {
+    position: relative; 
+    width: 65px; 
+    height: 65px; 
+    border-radius: 50%; 
+    border: 2px solid #ddd; 
+    overflow: hidden; 
+    flex-shrink: 0;
+    background: #fff;
+}
+
+.ai-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* --- ĐIỀU CHỈNH RIÊNG CHO ĐIỆN THOẠI (Màn hình dưới 600px) --- */
+@media (max-width: 600px) {
+    #ai-container {
+        padding: 8px 12px; /* Thu nhỏ khoảng cách lề */
+        gap: 10px;         /* Thu hẹp khoảng cách giữa ảnh và chữ */
+        margin: 5px 10px;  /* Giảm margin để không chiếm diện tích dọc */
+    }
+
+    .ai-avatar {
+        width: 45px;  /* Giảm kích thước ảnh AI trên điện thoại */
+        height: 45px;
+    }
+
+    /* Thu nhỏ chữ Trợ lý để cân đối */
+    #ai-container b, #ai-container div {
+        font-size: 13px !important;
+    }
+}
+
+/* Hiệu ứng cử động giữ nguyên */
+.ai-avatar img.speaking {
     animation: talk-sync 0.5s infinite alternate;
     filter: drop-shadow(0 0 8px var(--btn-orange));
 }
 
 @keyframes talk-sync {
     0% { transform: scale(1); }
-    100% { transform: scale(1.05); } /* Nhấp nhô nhẹ như đang nói */
+    100% { transform: scale(1.1); }
 }
-        /* Hiệu ứng rung lắc khi chọn sai */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            50% { transform: translateX(8px); }
-            75% { transform: translateX(-4px); }
-        }
         .shake-anim {
             animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
             border-color: var(--danger) !important;

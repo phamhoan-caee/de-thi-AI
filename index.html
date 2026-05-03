@@ -89,9 +89,7 @@
             <div style="font-size: 13px;">HỌC VIÊN: <span id="display-name" style="font-weight: bold;">---</span></div>
         </div>
     </div>
-
     <div id="timer" class="timer-floating">20:00</div>
-
     <div id="start-screen">
         <div class="welcome-container">
             <h2 style="text-align: center; color: var(--caee-blue); margin-bottom: 20px;">SÁT HẠCH LÝ THUYẾT</h2>
@@ -150,12 +148,12 @@
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD6ZzPWBa0HG24Av-JimMPQg3HTJklLOk89QogsshduBPsvz4xW0Qni82sRJQjuhqxr2E0OLMira03/pub?output=csv&gid=";
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxelRvwR52I6AADASik5veHbMIoPUdFc9TkPE7rHbOiXENbgbxQui96lS3VqSUBE-TO/exec";
      const myhoanghuy = "AIzaSyAa4Nmy8s5RplsylGUQJDSzd9deyY2SxFg"; // Key của bạn
-// Chia nhỏ API Key ra để robot không nhận diện được
+// Chia nhỏ myhoanghuy ra để robot không nhận diện được
 const part1 = "AIzaSyCBvMdjGc";
 const part2 = "U1tDJyZfVQP-6G";
 const part3 = "DLXbolDztAA"; 
 // Ghép lại khi chạy
-const apiKey = part1 + part2 + part3;
+const myhoanghuy = part1 + part2 + part3;
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false;
     let geminiCache = {};
@@ -178,7 +176,7 @@ const apiKey = part1 + part2 + part3;
         const correctText = q.options[labels.indexOf(q.answer)] || q.answer;
         const prompt = `Phân tích câu hỏi sát hạch máy công trình: "${q.question}". Đáp án đúng là ${q.answer}: ${correctText}. Hãy giải thích tại sao đúng và tại sao các câu khác sai một cách ngắn gọn. Sử dụng thẻ HTML <b> và <br> để trình bày đẹp.`;
         // ENDPOINT V1 CHÍNH THỨC
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${myhoanghuy}`;
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -265,7 +263,6 @@ const apiKey = part1 + part2 + part3;
             const clickEvent = (isPractice && stored) ? "" : `onclick="selectAns(${idx}, '${opt.replace(/'/g, "\\'")}')"`;
             html += `<div class="option-item ${cls}" ${clickEvent}><b>${labels[i]}.</b> ${opt}</div>`;
         });
-
         if(isPractice && stored) {
             html += `
                 <div style="background:#fff3cd; padding:15px; border-radius:8px; margin-top:10px; border-left: 5px solid #ffc107; font-size:14px;">

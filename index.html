@@ -16,51 +16,25 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: var(--light-bg); font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
 
-        /* --- STYLE CHO TRỢ LÝ AI (Đã tối ưu cho nhân vật anh kỹ sư) --- */
+        /* --- STYLE CHO NGƯỜI ẢO AI --- */
         #ai-container {
             display: none; background: white; max-width: 1300px; margin: 10px auto; 
             padding: 12px 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             align-items: center; gap: 15px; border-left: 6px solid var(--btn-orange);
         }
-
         .ai-avatar {
-            position: relative; 
-            width: 80px;      /* Tăng kích thước để nhìn rõ nhân vật */
-            height: 80px; 
-            border-radius: 50%; 
-            border: 2px solid #eee; 
-            overflow: hidden; 
-            flex-shrink: 0;
-            background: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative; width: 65px; height: 65px; 
+            border-radius: 50%; border: 2px solid #ddd; overflow: hidden; flex-shrink: 0;
         }
+      .ai-avatar img.speaking {
+    animation: talk-sync 0.5s infinite alternate;
+    filter: drop-shadow(0 0 8px var(--btn-orange));
+}
 
-        .ai-avatar img { 
-            width: 90%;       /* Thu nhỏ nhẹ để nhân vật nằm gọn trong vòng tròn */
-            height: 90%; 
-            object-fit: contain; /* QUAN TRỌNG: Giúp hiện toàn bộ người, không bị cắt mất đầu */
-            transition: all 0.3s; 
-        }
-
-        /* Hiệu ứng nhân vật cử động khi đang nói */
-        .ai-avatar img.speaking {
-            animation: talk-sync 0.6s infinite alternate;
-            filter: drop-shadow(0 0 5px rgba(255, 102, 0, 0.5));
-        }
-
-        @keyframes talk-sync {
-            0% { transform: scale(1) translateY(0); }
-            100% { transform: scale(1.05) translateY(-2px); } /* Nhấp nhô nhẹ nhàng */
-        }
-        .speaking-waves {
-            display: none; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
-            gap: 3px; align-items: flex-end; height: 15px;
-        }
-        .wave { width: 3px; background: var(--btn-orange); border-radius: 3px; animation: wave-anim 0.5s infinite ease-in-out; }
-        @keyframes wave-anim { 0%, 100% { height: 5px; } 50% { height: 15px; } }
-
+@keyframes talk-sync {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); } /* Nhấp nhô nhẹ như đang nói */
+}
         /* Hiệu ứng rung lắc khi chọn sai */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -125,11 +99,15 @@
             cursor: pointer; transition: all 0.3s ease; font-weight: 500; display: flex; align-items: center;
         }
         .option-item:hover:not(.disabled) { border-color: var(--btn-blue); background: #f0f7ff; }
+        
         .option-item.selected { 
-            background: #fff; border-color: #00e5ff; color: #003399;
+            background: #fff; 
+            border-color: #00e5ff; 
+            color: #003399;
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.6), inset 0 0 10px rgba(0, 229, 255, 0.2);
             transform: scale(1.01);
         }
+        
         .option-item.correct { background: #d4edda !important; border-color: #28a745 !important; box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
         .option-item.wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
 
@@ -189,21 +167,20 @@
         </div>
     </div>
 
-    <!-- Bước 2: Khu vực hiển thị AI mới -->
     <div id="ai-container">
         <div class="ai-avatar">
-            <img id="ai-character" src="https://github.com/phamhoan-caee/de-thi-AI/blob/main/%E1%BA%A3nh_nh%C3%A2n_vat_de_thi-removebg-preview.png" alt="AI Assistant" onerror="this.src='https://drive.google.com/file/d/1vPKAy0s0X2Smx1A5YDmx8JfPY3DsJklO/view?usp=sharing'">
-            <div class="speaking-waves" id="ai-waves">
-                <div class="wave" style="animation-delay: 0s"></div>
-                <div class="wave" style="animation-delay: 0.1s"></div>
-                <div class="wave" style="animation-delay: 0.2s"></div>
-            </div>
-        </div>
-        <div>
-            <div style="font-weight: bold; color: var(--caee-blue); font-size: 15px;">Trợ lý ảo CAEE</div>
-            <div id="ai-status" style="font-size: 13px; color: #666;">Sẵn sàng hỗ trợ.</div>
+            <img src="https://github.com/phamhoan-caee/de-thi-AI/blob/main/%E1%BA%A3nh_nh%C3%A2n_vat_de_thi-removebg-preview.png" alt="AI Assistant" onerror="this.src='https://drive.google.com/file/d/1vPKAy0s0X2Smx1A5YDmx8JfPY3DsJklO/view?usp=sharing'">
+           <div class="speaking-waves" id="ai-waves">
+            <div class="wave" style="animation-delay: 0s"></div>
+            <div class="wave" style="animation-delay: 0.1s"></div>
+            <div class="wave" style="animation-delay: 0.2s"></div>
         </div>
     </div>
+    <div>
+        <div style="font-weight: bold; color: var(--caee-blue); font-size: 15px;">Trợ lý ảo CAEE</div>
+        <div id="ai-status" style="font-size: 13px; color: #666;">Đang lắng nghe...</div>
+    </div>
+</div>
 
     <div id="quiz-screen">
         <div id="quiz-content"></div>
@@ -238,29 +215,51 @@
 
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQX7gLNKe58sjBUDPDQOohDehuVD22EFgCe472mKd61a6d_FPIYFoh21DEdi9_BS7yukbuwy69Q9oZZ/pub?output=csv&gid=";
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_SFppOk-TowL--EAS7cEfhgLzRsEPyygMHUNphZKWy3KFeAI2eOiLBEH8_b6jemCa/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvC95KSYNjPQC-w9KRgFNCrRDw1q3x6W_qA7cyFztW6NeFisKDZDoC7V5goKW8DoUu/exec";
     
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false, cheatCount = 0;
 
-    /* --- Bước 3: Lập trình "Bộ não" phát âm và cử động --- */
-    const synth = window.speechSynthesis;
-    const aiImg = document.getElementById('ai-character');
+   const synth = window.speechSynthesis;
+    const aiImg = document.getElementById('ai-character'); // Lấy ảnh nhân vật kỹ sư
 
+    function aiSpeak(text) {
+        // 1. Dừng mọi câu đang nói dở để tránh chồng chéo giọng đọc
+        synth.cancel();
+
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'vi-VN'; // Giọng đọc tiếng Việt
+        utter.rate = 1.0;     // Tốc độ vừa phải cho học viên dễ nghe
+
+        // 2. Khi AI bắt đầu phát âm
+        utter.onstart = () => {
+            document.getElementById('ai-waves').style.display = 'flex'; // Hiện sóng âm
+            if (aiImg) aiImg.classList.add('speaking'); // Kích hoạt nhân vật cử động
+            document.getElementById('ai-status').innerText = 'Đang thuyết minh...';
+        };
+
+        // 3. Khi AI kết thúc câu nói
+        utter.onend = () => {
+            document.getElementById('ai-waves').style.display = 'none'; // Ẩn sóng âm
+            if (aiImg) aiImg.classList.remove('speaking'); // Nhân vật đứng yên
+            document.getElementById('ai-status').innerText = 'Sẵn sàng.';
+        };
+
+        // 4. Lệnh bắt đầu nói
+        synth.speak(utter);
+    }
     function aiSpeak(text) {
         synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'vi-VN';
-        utter.rate = 1.0; 
+        utter.rate = 1.1; // Tốc độ vừa phải để học viên nghe rõ
         
         utter.onstart = () => {
             document.getElementById('ai-waves').style.display = 'flex';
-            aiImg.classList.add('speaking'); // Kích hoạt hiệu ứng "thở"
             document.getElementById('ai-status').innerText = 'Đang thuyết minh...';
         };
         utter.onend = () => {
             document.getElementById('ai-waves').style.display = 'none';
-            aiImg.classList.remove('speaking'); // Đứng yên
             document.getElementById('ai-status').innerText = 'Sẵn sàng.';
         };
         synth.speak(utter);
@@ -330,7 +329,6 @@
         aiSpeak("Chào mừng học viên " + document.getElementById('studentName').value + ". Chúc bạn hoàn thành tốt bài trắc nghiệm.");
     }
 
-    /* --- Bước 4: Kích hoạt AI đọc câu hỏi và đáp án --- */
     function showQuestion(idx) {
         currentQuestionIndex = idx;
         const q = selectedQuestions[idx];
@@ -361,11 +359,11 @@
         document.getElementById('quiz-content').innerHTML = html;
         renderGrid();
 
-        // Tự động đọc nếu chưa làm câu này
+        // CẢI TIẾN: AI đọc cả câu hỏi và đáp án nếu chưa làm
         if (!stored) {
-            let textToRead = "Câu hỏi " + (idx+1) + ". " + q.question + ". ";
+            let textToRead = "Câu hỏi " + (idx+1) + ": " + q.question + ". ";
             q.options.forEach((opt, i) => {
-                textToRead += "Đáp án " + labels[i] + ". " + opt + ". ";
+                textToRead += "Đáp án " + labels[i] + ": " + opt + ". ";
             });
             aiSpeak(textToRead);
         }
@@ -449,6 +447,7 @@
         badge.style.backgroundColor = status === "ĐẠT" ? "#28a745" : "#dc3545";
         document.getElementById('result-screen').style.display = 'flex';
 
+        // AI thông báo kết quả
         aiSpeak("Kết quả của bạn là " + score10 + " điểm. Trạng thái " + status);
 
         const formData = new URLSearchParams();
@@ -456,13 +455,13 @@
         formData.append('name', nameValue);
         formData.append('birthDate', dobValue);
         formData.append('khoaThi', khoaThiValue);
-        const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
-        const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
-        formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
+       const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
+const modeSuffix = document.getElementById('modeToggle').checked ? " (ÔN TẬP)" : " (THI)";
+formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
         formData.append('score', score + "/30 (" + score10 + " điểm)");
         formData.append('status', status);
         formData.append('viPham', cheatCount);
-        formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
+formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
 
         let c = 15;

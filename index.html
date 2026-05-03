@@ -33,8 +33,8 @@
 /* Kích thước mặc định trên Máy tính */
 .ai-avatar {
     position: relative; 
-    width: 65px; 
-    height: 65px; 
+    width: 25px; 
+    height: 25px; 
     border-radius: 50%; 
     border: 2px solid #ddd; 
     overflow: hidden; 
@@ -47,7 +47,6 @@
     height: 100%;
     object-fit: contain;
 }
-
 /* --- ĐIỀU CHỈNH RIÊNG CHO ĐIỆN THOẠI (Màn hình dưới 600px) --- */
 @media (max-width: 600px) {
     #ai-container {
@@ -55,12 +54,10 @@
         gap: 10px;         /* Thu hẹp khoảng cách giữa ảnh và chữ */
         margin: 5px 10px;  /* Giảm margin để không chiếm diện tích dọc */
     }
-
     .ai-avatar {
         width: 45px;  /* Giảm kích thước ảnh AI trên điện thoại */
         height: 45px;
     }
-
     /* Thu nhỏ chữ Trợ lý để cân đối */
     #ai-container b, #ai-container div {
         font-size: 13px !important;
@@ -72,7 +69,6 @@
     animation: talk-sync 0.5s infinite alternate;
     filter: drop-shadow(0 0 8px var(--btn-orange));
 }
-
 @keyframes talk-sync {
     0% { transform: scale(1); }
     100% { transform: scale(1.1); }
@@ -82,7 +78,6 @@
             border-color: var(--danger) !important;
             box-shadow: 0 0 15px rgba(220, 53, 69, 0.4) !important;
         }
-
         #warning-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(220, 53, 69, 0.85); backdrop-filter: blur(8px);
@@ -125,7 +120,6 @@
         .welcome-container { background: white; width: 95%; max-width: 450px; border-radius: 15px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
         .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        
         #quiz-screen { padding: 20px; display: none; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1300px; margin: auto; padding-top: 100px; }
         #quiz-content { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 400px; }
         
@@ -134,7 +128,6 @@
             cursor: pointer; transition: all 0.3s ease; font-weight: 500; display: flex; align-items: center;
         }
         .option-item:hover:not(.disabled) { border-color: var(--btn-blue); background: #f0f7ff; }
-        
         .option-item.selected { 
             background: #fff; 
             border-color: #00e5ff; 
@@ -142,7 +135,6 @@
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.6), inset 0 0 10px rgba(0, 229, 255, 0.2);
             transform: scale(1.01);
         }
-        
         .option-item.correct { background: #d4edda !important; border-color: #28a745 !important; box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
         .option-item.wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
 
@@ -201,7 +193,6 @@
             <button class="btn-start" id="btnStart" onclick="validateAndStart()">VÀO THI NGAY ➔</button>
         </div>
     </div>
-
     <div id="ai-container">
         <div class="ai-avatar">
             <img src="https://github.com/phamhoan-caee/de-thi-AI/blob/main/%E1%BA%A3nh_nh%C3%A2n_vat_de_thi-removebg-preview.png" alt="AI Assistant" onerror="this.src='https://drive.google.com/file/d/1vPKAy0s0X2Smx1A5YDmx8JfPY3DsJklO/view?usp=sharing'">
@@ -216,7 +207,6 @@
         <div id="ai-status" style="font-size: 13px; color: #666;">Đang lắng nghe...</div>
     </div>
 </div>
-
     <div id="quiz-screen">
         <div id="quiz-content"></div>
         <div class="sidebar-right">
@@ -227,7 +217,6 @@
             </div>
         </div>
     </div>
-
     <div id="result-screen">
         <div class="result-card">
             <div style="font-size: 1.5rem; font-weight: bold; color: var(--caee-blue); margin-bottom: 20px;">KẾT QUẢ THI</div>
@@ -247,32 +236,25 @@
             <p style="margin-top: 25px; color: #666; font-size: 0.85rem;">Hệ thống tự đóng sau <span id="countdown">15</span> giây...</p>
         </div>
     </div>
-
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQX7gLNKe58sjBUDPDQOohDehuVD22EFgCe472mKd61a6d_FPIYFoh21DEdi9_BS7yukbuwy69Q9oZZ/pub?output=csv&gid=";
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvC95KSYNjPQC-w9KRgFNCrRDw1q3x6W_qA7cyFztW6NeFisKDZDoC7V5goKW8DoUu/exec";
-    
-    let allQuestions = [], selectedQuestions = [], studentAnswers = [];
+        let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false, cheatCount = 0;
-
    const synth = window.speechSynthesis;
     const aiImg = document.getElementById('ai-character'); // Lấy ảnh nhân vật kỹ sư
-
     function aiSpeak(text) {
         // 1. Dừng mọi câu đang nói dở để tránh chồng chéo giọng đọc
         synth.cancel();
-
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'vi-VN'; // Giọng đọc tiếng Việt
         utter.rate = 1.0;     // Tốc độ vừa phải cho học viên dễ nghe
-
         // 2. Khi AI bắt đầu phát âm
         utter.onstart = () => {
             document.getElementById('ai-waves').style.display = 'flex'; // Hiện sóng âm
             if (aiImg) aiImg.classList.add('speaking'); // Kích hoạt nhân vật cử động
             document.getElementById('ai-status').innerText = 'Đang thuyết minh...';
         };
-
         // 3. Khi AI kết thúc câu nói
         utter.onend = () => {
             document.getElementById('ai-waves').style.display = 'none'; // Ẩn sóng âm
@@ -299,9 +281,7 @@
         };
         synth.speak(utter);
     }
-
     window.onload = preloadQuestions;
-
     function preloadQuestions() {
         const gid = document.getElementById('jobType').value;
         Papa.parse(BASE_CSV_URL + gid, {
@@ -326,12 +306,9 @@
         const rawNghe = document.getElementById('jobType').options[document.getElementById('jobType').selectedIndex].text;
         const isOnTap = document.getElementById('modeToggle').checked;
         const ngheFull = "NGHỀ: " + rawNghe + (isOnTap ? " (ÔN TẬP)" : " (THI)");
-
         if(!name || !maThi || !dob) return alert("Vui lòng nhập đầy đủ thông tin!");
-        
-        const btn = document.getElementById('btnStart');
+                const btn = document.getElementById('btnStart');
         btn.disabled = true; btn.innerText = "ĐANG KIỂM TRA...";
-
         try {
             const res = await fetch(`${WEB_APP_URL}?action=checkCode&code=${encodeURIComponent(maThi)}&name=${encodeURIComponent(name)}&ngheName=${encodeURIComponent(ngheFull)}`);
             const result = await res.json();
@@ -342,7 +319,6 @@
             btn.disabled = false; btn.innerText = "VÀO THI NGAY ➔"; 
         }
     }
-
     function startQuiz() {
         if(allQuestions.length === 0) return alert("Vui lòng đợi dữ liệu tải...");
         selectedQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 30);
@@ -363,7 +339,6 @@
         startTimer();
         aiSpeak("Chào mừng học viên " + document.getElementById('studentName').value + ". Chúc bạn hoàn thành tốt bài trắc nghiệm.");
     }
-
     function showQuestion(idx) {
         currentQuestionIndex = idx;
         const q = selectedQuestions[idx];
@@ -373,7 +348,6 @@
 
         let html = `<h3>Câu ${idx + 1}: ${q.question}</h3>`;
         if(q.image) html += `<div class="q-image-box"><img src="${q.image}"></div>`;
-
         q.options.forEach((opt, i) => {
             let cls = "";
             const isSelected = stored && opt === stored.selected;
@@ -393,7 +367,6 @@
         
         document.getElementById('quiz-content').innerHTML = html;
         renderGrid();
-
         // CẢI TIẾN: AI đọc cả câu hỏi và đáp án nếu chưa làm
         if (!stored) {
             let textToRead = "Câu hỏi " + (idx+1) + ": " + q.question + ". ";
@@ -403,7 +376,6 @@
             aiSpeak(textToRead);
         }
     }
-
     function selectAns(qIdx, ans) {
         if(isSubmitted) return;
         const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
@@ -431,7 +403,6 @@
             showQuestion(qIdx);
         }
     }
-
     function renderGrid() {
         const grid = document.getElementById('nav-grid');
         grid.innerHTML = "";
@@ -451,17 +422,14 @@
             if(timeLeft <= 0) submitQuiz(true);
         }, 1000);
     }
-
     async function submitQuiz(auto = false) {
         if(!auto && !confirm("Bạn có chắc chắn muốn nộp bài thi?")) return;
         clearInterval(timerInterval); 
         synth.cancel();
         isSubmitted = true;
-        
-        const nameValue = document.getElementById('studentName').value.toUpperCase().trim();
+                const nameValue = document.getElementById('studentName').value.toUpperCase().trim();
         const dobValue = document.getElementById('studentDOB').value.trim();
         const khoaThiValue = document.getElementById('khoaThi').value.trim();
-
         let score = 0;
         selectedQuestions.forEach((q, i) => {
             const ans = studentAnswers.find(a => a.qIndex === i);
@@ -481,10 +449,8 @@
         badge.innerText = score10 + " ĐIỂM"; 
         badge.style.backgroundColor = status === "ĐẠT" ? "#28a745" : "#dc3545";
         document.getElementById('result-screen').style.display = 'flex';
-
         // AI thông báo kết quả
         aiSpeak("Kết quả của bạn là " + score10 + " điểm. Trạng thái " + status);
-
         const formData = new URLSearchParams();
         formData.append('maThi', document.getElementById('maThi').value.trim().toUpperCase());
         formData.append('name', nameValue);
@@ -498,7 +464,6 @@ formData.append('ngheName', "NGHỀ: " + rawNghe + modeSuffix);
         formData.append('viPham', cheatCount);
 formData.append('mode', document.getElementById('modeToggle').checked ? "ON_TAP" : "THI");
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
-
         let c = 15;
         const cdInterval = setInterval(() => { 
             if(c > 0) { c--; document.getElementById('countdown').innerText = c; }

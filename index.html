@@ -12,10 +12,8 @@
             --success: #28a745; --danger: #dc3545;
             --light-bg: #f0f2f5;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: var(--light-bg); font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
-
         /* AI Container */
         #ai-container {
             display: none; background: white; max-width: 1300px; margin: 10px auto; 
@@ -28,36 +26,30 @@
             background: #fff;
         }
         .ai-avatar img { width: 100%; height: 100%; object-fit: contain; }
-
         .speaking-waves {
             display: none; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
             gap: 3px; align-items: flex-end; height: 15px;
         }
         .wave { width: 3px; background: var(--btn-orange); border-radius: 3px; animation: wave-anim 0.5s infinite ease-in-out; }
         @keyframes wave-anim { 0%, 100% { height: 5px; } 50% { height: 15px; } }
-
         .caee-header {
             background: var(--header-blue); color: white; padding: 10px 20px;
             display: none; justify-content: center; align-items: center;
             position: fixed; top: 0; width: 100%; z-index: 1000; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
-
         .timer-floating {
             position: fixed; top: 20px; right: 20px;
             background: rgba(255, 255, 255, 0.9); color: #dc3545; padding: 10px 20px;
             border-radius: 50px; font-weight: 900; font-size: 1.3rem;
             border: 2px solid #dc3545; z-index: 2000; display: none;
         }
-
         #start-screen { min-height: 90vh; display: flex; justify-content: center; align-items: center; }
         .welcome-container { background: white; width: 95%; max-width: 450px; border-radius: 15px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
         .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-
         #quiz-screen { padding: 20px; display: none; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1300px; margin: auto; padding-top: 100px; }
         #quiz-content { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 400px; }
-
         .option-item {
             border: 2px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 10px;
             cursor: pointer; transition: 0.2s; font-weight: 500;
@@ -67,22 +59,18 @@
         .option-item.correct { background: #d4edda !important; border-color: #28a745 !important; }
         .option-item.wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
         .disabled { cursor: default; }
-
         .btn-gemini {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; 
             cursor: pointer; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn-gemini:disabled { opacity: 0.7; cursor: not-allowed; }
-
         .gemini-response-box {
             background: #fdfbff; border-left: 5px solid #764ba2; padding: 15px; 
             border-radius: 4px; margin-top: 15px; display: none; line-height: 1.6; border: 1px solid #eee; font-size: 14px;
         }
-
         #result-screen { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #003399 0%, #0040cc 100%); z-index: 9999; justify-content: center; align-items: center; color: white; }
         .result-card { background: white; color: #333; width: 90%; max-width: 450px; border-radius: 20px; padding: 30px; text-align: center; }
-
         .loading-spinner {
             width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%; border-top-color: #fff; animation: spin 1s infinite linear; display: inline-block;
@@ -94,7 +82,6 @@
     </style>
 </head>
 <body oncontextmenu="return false">
-
     <div class="caee-header" id="caee-header">
         <div style="text-align: center;">
             <div style="font-weight: 900; font-size: 14px;">TRƯỜNG CAO ĐẲNG CƠ ĐIỆN NÔNG NGHIỆP VÀ MÔI TRƯỜNG</div>
@@ -126,7 +113,6 @@
             <button class="btn-start" onclick="validateAndStart()">BẮT ĐẦU THI ➔</button>
         </div>
     </div>
-
     <div id="ai-container">
         <div class="ai-avatar">
             <img src="https://cdn-icons-png.flaticon.com/512/1904/1904560.png" alt="AI">
@@ -139,7 +125,6 @@
             <div id="ai-status" style="font-size: 13px; color: #666;">Sẵn sàng hỗ trợ...</div>
         </div>
     </div>
-
     <div id="quiz-screen">
         <div id="quiz-content"></div>
         <div class="sidebar-right">
@@ -150,7 +135,6 @@
             </div>
         </div>
     </div>
-
     <div id="result-screen">
         <div class="result-card">
             <h2 style="color: var(--caee-blue);">KẾT QUẢ THI</h2>
@@ -164,46 +148,37 @@
     </div>
 <script>
     const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD6ZzPWBa0HG24Av-JimMPQg3HTJklLOk89QogsshduBPsvz4xW0Qni82sRJQjuhqxr2E0OLMira03/pub?output=csv&gid=";
-    const myhoanghuy = "AIzaSyAa4Nmy8s5RplsylGUQJDSzd9deyY2SxFg"; // Key của bạn
-
- const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxelRvwR52I6AADASik5veHbMIoPUdFc9TkPE7rHbOiXENbgbxQui96lS3VqSUBE-TO/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxelRvwR52I6AADASik5veHbMIoPUdFc9TkPE7rHbOiXENbgbxQui96lS3VqSUBE-TO/exec";
+     const myhoanghuy = "AIzaSyAa4Nmy8s5RplsylGUQJDSzd9deyY2SxFg"; // Key của bạn
 // Chia nhỏ API Key ra để robot không nhận diện được
 const part1 = "AIzaSyCBvMdjGc";
 const part2 = "U1tDJyZfVQP-6G";
 const part3 = "DLXbolDztAA"; 
-
 // Ghép lại khi chạy
 const apiKey = part1 + part2 + part3;
     let allQuestions = [], selectedQuestions = [], studentAnswers = [];
     let currentQuestionIndex = 0, timeLeft = 1200, timerInterval, isSubmitted = false;
     let geminiCache = {};
-
     // HÀM QUAN TRỌNG: Đã đổi sang v1 để nhận diện gemini-1.5-flash
     async function getGeminiExplanation(qIdx) {
         const q = selectedQuestions[qIdx];
         const btn = document.getElementById(`gemini-btn-${qIdx}`);
         const box = document.getElementById(`gemini-box-${qIdx}`);
         const status = document.getElementById('ai-status');
-
         if(geminiCache[qIdx]) {
             box.innerHTML = geminiCache[qIdx];
             box.style.display = 'block';
             btn.style.display = 'none';
             return;
         }
-
         btn.disabled = true;
         btn.innerHTML = `<span class="loading-spinner"></span> Đang kết nối AI...`;
         status.innerText = "AI đang phân tích câu hỏi...";
-
         const labels = ['A', 'B', 'C', 'D'];
         const correctText = q.options[labels.indexOf(q.answer)] || q.answer;
-
         const prompt = `Phân tích câu hỏi sát hạch máy công trình: "${q.question}". Đáp án đúng là ${q.answer}: ${correctText}. Hãy giải thích tại sao đúng và tại sao các câu khác sai một cách ngắn gọn. Sử dụng thẻ HTML <b> và <br> để trình bày đẹp.`;
-
         // ENDPOINT V1 CHÍNH THỨC
         const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -212,13 +187,10 @@ const apiKey = part1 + part2 + part3;
                     contents: [{ parts: [{ text: prompt }] }]
                 })
             });
-
             const data = await response.json();
-
             if (data.error) {
                 throw new Error(data.error.message);
             }
-
             let result = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (result) {
                 result = result.replace(/```html/g, '').replace(/```/g, '');
@@ -236,9 +208,7 @@ const apiKey = part1 + part2 + part3;
             alert("Không thể gọi AI. Vui lòng kiểm tra lại API Key hoặc mạng.");
         }
     }
-
     window.onload = preloadQuestions;
-
     function preloadQuestions() {
         const gid = document.getElementById('jobType').value;
         Papa.parse(BASE_CSV_URL + gid, {
@@ -254,7 +224,6 @@ const apiKey = part1 + part2 + part3;
             }
         });
     }
-
     function validateAndStart() {
         const name = document.getElementById('studentName').value.trim();
         const dob = document.getElementById('studentDOB').value.trim();
@@ -263,7 +232,6 @@ const apiKey = part1 + part2 + part3;
         if(allQuestions.length === 0) return alert("Đang tải dữ liệu, vui lòng đợi...");
         startQuiz();
     }
-
     function startQuiz() {
         selectedQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 30);
         document.getElementById('display-name').innerText = document.getElementById('studentName').value.toUpperCase();
@@ -276,7 +244,6 @@ const apiKey = part1 + part2 + part3;
         showQuestion(0);
         startTimer();
     }
-
     function showQuestion(idx) {
         currentQuestionIndex = idx;
         const q = selectedQuestions[idx];
@@ -295,7 +262,6 @@ const apiKey = part1 + part2 + part3;
                 else if(isSelected) cls = "wrong";
                 cls += " disabled";
             } else if(isSelected) cls = "selected";
-
             const clickEvent = (isPractice && stored) ? "" : `onclick="selectAns(${idx}, '${opt.replace(/'/g, "\\'")}')"`;
             html += `<div class="option-item ${cls}" ${clickEvent}><b>${labels[i]}.</b> ${opt}</div>`;
         });
@@ -310,12 +276,10 @@ const apiKey = part1 + part2 + part3;
                 </button>
                 <div id="gemini-box-${idx}" class="gemini-response-box"></div>`;
         }
-
         html += `<div style="display:flex; justify-content:space-between; margin-top:25px; gap:10px;">
                     <button class="btn-start" style="padding:10px; background:var(--btn-blue);" onclick="showQuestion(${idx-1})" ${idx===0?'disabled':''}>Lùi lại</button>
                     <button class="btn-start" style="padding:10px; background:var(--btn-blue);" onclick="showQuestion(${idx+1})" ${idx===29?'disabled':''}>Tiếp theo</button>
                  </div>`;
-
         document.getElementById('quiz-content').innerHTML = html;
         if (geminiCache[idx]) {
             const box = document.getElementById(`gemini-box-${idx}`);
@@ -326,7 +290,6 @@ const apiKey = part1 + part2 + part3;
         }
         renderGrid();
     }
-
     function selectAns(qIdx, ans) {
         if(isSubmitted) return;
         const findIndex = studentAnswers.findIndex(a => a.qIndex === qIdx);
@@ -334,7 +297,6 @@ const apiKey = part1 + part2 + part3;
         else studentAnswers.push({qIndex: qIdx, selected: ans});
         showQuestion(qIdx);
     }
-
     function renderGrid() {
         const grid = document.getElementById('nav-grid');
         grid.innerHTML = "";
@@ -345,7 +307,6 @@ const apiKey = part1 + part2 + part3;
             grid.innerHTML += `<div onclick="showQuestion(${i})" style="height:35px; display:flex; justify-content:center; align-items:center; border-radius:5px; cursor:pointer; font-size:13px; font-weight:bold; ${bg} ${active}">${i+1}</div>`;
         });
     }
-
     function startTimer() {
         timerInterval = setInterval(() => {
             timeLeft--;
@@ -354,7 +315,6 @@ const apiKey = part1 + part2 + part3;
             if(timeLeft <= 0) submitQuiz(true);
         }, 1000);
     }
-
     function submitQuiz(auto = false) {
         if(!auto && !confirm("Bạn có chắc muốn nộp bài thi?")) return;
         clearInterval(timerInterval); 

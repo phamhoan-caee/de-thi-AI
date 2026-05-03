@@ -16,29 +16,44 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: var(--light-bg); font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
 
-        /* --- STYLE CHO TRỢ LÝ AI (Bước 1: Hiệu ứng cử động) --- */
+        /* --- STYLE CHO TRỢ LÝ AI (Đã tối ưu cho nhân vật anh kỹ sư) --- */
         #ai-container {
             display: none; background: white; max-width: 1300px; margin: 10px auto; 
             padding: 12px 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             align-items: center; gap: 15px; border-left: 6px solid var(--btn-orange);
         }
+
         .ai-avatar {
-            position: relative; width: 65px; height: 65px; 
-            border-radius: 50%; border: 2px solid #ddd; overflow: hidden; flex-shrink: 0;
-            background: #f9f9f9;
+            position: relative; 
+            width: 80px;      /* Tăng kích thước để nhìn rõ nhân vật */
+            height: 80px; 
+            border-radius: 50%; 
+            border: 2px solid #eee; 
+            overflow: hidden; 
+            flex-shrink: 0;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .ai-avatar img { width: 100%; height: 100%; object-fit: cover; transition: all 0.3s; }
 
-        /* Hiệu ứng nhân vật đang nói */
+        .ai-avatar img { 
+            width: 90%;       /* Thu nhỏ nhẹ để nhân vật nằm gọn trong vòng tròn */
+            height: 90%; 
+            object-fit: contain; /* QUAN TRỌNG: Giúp hiện toàn bộ người, không bị cắt mất đầu */
+            transition: all 0.3s; 
+        }
+
+        /* Hiệu ứng nhân vật cử động khi đang nói */
         .ai-avatar img.speaking {
-            animation: talk-sync 0.5s infinite alternate;
-            filter: drop-shadow(0 0 8px var(--btn-orange));
-        }
-        @keyframes talk-sync {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); } /* Nhấp nhô nhẹ */
+            animation: talk-sync 0.6s infinite alternate;
+            filter: drop-shadow(0 0 5px rgba(255, 102, 0, 0.5));
         }
 
+        @keyframes talk-sync {
+            0% { transform: scale(1) translateY(0); }
+            100% { transform: scale(1.05) translateY(-2px); } /* Nhấp nhô nhẹ nhàng */
+        }
         .speaking-waves {
             display: none; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
             gap: 3px; align-items: flex-end; height: 15px;
@@ -177,7 +192,7 @@
     <!-- Bước 2: Khu vực hiển thị AI mới -->
     <div id="ai-container">
         <div class="ai-avatar">
-            <img id="ai-character" src="https://raw.githubusercontent.com/thayhoan/thi-xe-nang/main/images/ai-safety.png" alt="AI Assistant" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1904/1904560.png'">
+            <img id="ai-character" src="https://github.com/phamhoan-caee/de-thi-AI/blob/main/%E1%BA%A3nh_nh%C3%A2n_vat_de_thi-removebg-preview.png" alt="AI Assistant" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1904/1904560.png'">
             <div class="speaking-waves" id="ai-waves">
                 <div class="wave" style="animation-delay: 0s"></div>
                 <div class="wave" style="animation-delay: 0.1s"></div>
